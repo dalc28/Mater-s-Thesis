@@ -18,18 +18,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from D import D
 from m_op1 import m_op1
-from m_op import m_op
-N = 200
-#alphar = 0.925761
+#from m_op import m_op
+N = 100
 bethar = 0.2
 #yinf = (2*np.pi)/alphar
-yinf = 1
-ymax = yinf
-ymin = -ymax
 #Aplicamos una transformación para mapear los valores de y a los de z que corresponden al dominio de los polinomios de
 #Chebyshev
 # r es el factor de escala de la transformación recomendado como 2.0 para el método de colocación.
-r = 2
+r = 2.0
 z = np.cos((np.arange(0,N+1)*np.pi)/N)
 z[0] = 0.999999
 z[N] = -0.999999
@@ -41,32 +37,32 @@ z[N] = -0.999999
 #du2 = ((r/(1-(z**2)))*(1+((z**2)/(1-(z**2))))*(1/((np.cosh((z*r)/(np.sqrt(1-(z**2)))))**2)))*(((3*z)/(np.sqrt(1-(z**2))))-((2*r)*(1+((z**2)/(1-(z**2))))*(np.tanh((z*r)/(np.sqrt(1-(z**2)))))))
 ## definimos las funcioines f
 U = lambda z: 0.5*(1+np.tanh((z*r)/(np.sqrt(1-(z**2)))))
-du = lambda z: 0.5*((r/(np.sqrt(1-(z**2))))*(1/((np.cosh((z*r)/(np.sqrt(1-(z**2)))))**2)))*(1+((z**2)/(1-(z**2))))
-du2 = lambda z: 0.5*((r/(1-(z**2)))*(1+((z**2)/(1-(z**2))))*(1/((np.cosh((z*r)/(np.sqrt(1-(z**2)))))**2)))*(((3*z)/(np.sqrt(1-(z**2))))-((2*r)*(1+((z**2)/(1-(z**2))))*(np.tanh((z*r)/(np.sqrt(1-(z**2)))))))
-m = lambda z: ((1-(z**2))**(3/2))/r
-m2 = lambda z: ((1-(z**2))**3)/(r**2)
-dm = lambda z: ((-3*z)/r)*(np.sqrt(1-(z**2)))
-
+#du = lambda z: 0.5*((r/(np.sqrt(1-(z**2))))*(1/((np.cosh((z*r)/(np.sqrt(1-(z**2)))))**2)))*(1+((z**2)/(1-(z**2))))
+#du2 = lambda z: 0.5*((r/(1-(z**2)))*(1+((z**2)/(1-(z**2))))*(1/((np.cosh((z*r)/(np.sqrt(1-(z**2)))))**2)))*(((3*z)/(np.sqrt(1-(z**2))))-((2*r)*(1+((z**2)/(1-(z**2))))*(np.tanh((z*r)/(np.sqrt(1-(z**2)))))))
+#m = lambda z: ((1-(z**2))**(3/2))/r
+#m2 = lambda z: ((1-(z**2))**3)/(r**2)
+#mdm = lambda z: ((-3*z)/r**2)*((1-(z**2))**2)
+f1 = lambda z: (0.5*(1+np.tanh((z*r)/(np.sqrt(1-(z**2))))))*(((1-(z**2))**3)/(r**2)) ##Um^2
+f2 = lambda z: (0.5*(1+np.tanh((z*r)/(np.sqrt(1-(z**2))))))*(((-3*z)/r**2)*((1-(z**2))**2)) #Umdm
+f3 = lambda z: -0.5*((r/(1-(z**2)))*(1+((z**2)/(1-(z**2))))*(1/((np.cosh((z*r)/(np.sqrt(1-(z**2)))))**2)))*(((3*z)/(np.sqrt(1-(z**2))))-((2*r)*(1+((z**2)/(1-(z**2))))*(np.tanh((z*r)/(np.sqrt(1-(z**2))))))) ## -m(mU')'
+f4 = lambda z: -bethar*(((1-(z**2))**3)/(r**2)) #betha*(U^2)
+f5 = lambda z: -bethar*(((-3*z)/r**2)*((1-(z**2))**2)) #betha*(mdm)
 ##############################GRAFICAS#########################################################################################
-#plt.plot(z,m(z))
-#plt.plot(z,m2(z))
-#plt.plot(z,dm(z))
+#plt.plot(z,f4(z))
+#plt.plot(z,f5(z))
+#plt.plot(z,f3(z))
 #plt.grid()
 #plt.show()
 ###############################################################################################################################
-#Construcciones de la matrices
+
+#Construcciones de la matrices f
 u = np.identity(N+1)*U(z)
-du = np.identity(N+1)*du(z)
-du2 = np.identity(N+1)*du2(z)
-m = np.identity(N+1)*m(z)
-dm = np.identity(N+1)*dm(z)
-m2 = np.identity(N+1)*m2(z)
-## Construcción de las matrices f
-f1 = u@m@m
-f2 = u@m@dm
-f3 = - m@m@du2 - m@dm@du
-f4 = -bethar*(m@m)
-f5 = -bethar*(m@dm)
+f1 = np.identity(N+1)*f1(z)
+f2 = np.identity(N+1)*f2(z)
+f3 = np.identity(N+1)*f3(z)
+f4 = np.identity(N+1)*f4(z)
+f5 = np.identity(N+1)*f5(z)
+
 ## Construcción de las matrices de diferenciacion
 #D = np.zeros((N+1,N+1))
 #print(z)
@@ -141,6 +137,6 @@ Alpha = np.extract(np.imag(eigenv1) != 0 , eigenv1)
 #alpha_val = np.where(alphai == np.amax(alphai))
 alphamod = abs(Alpha)
 alphamax = np.where(alphamod == np.amax(alphamod))
-print(Alpha[alphamax[0]])
-#print(eigenv)
-print(Alpha)
+#print(Alpha[alphamax[0]])
+print(eigenvalues)
+#print(Alpha)
